@@ -13,19 +13,12 @@ public class AtivoDAO {
     public List<Ativo> listarTodos() {
         String sql = "SELECT * FROM ativos";
         List<Ativo> lista = new ArrayList<>();
-
-        try (Connection conn = ConexaoBanco.getConexao();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
+        try {
+                Connection conn = ConexaoBanco.getConexao();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Ativo ativo = new Ativo();
-                ativo.setId(rs.getInt("id"));
-                ativo.setTicker(rs.getString("ticker"));
-                ativo.setNome(rs.getString("nome"));
-                ativo.setTipo(rs.getString("tipo"));
-                
-                lista.add(ativo);
+                lista.add(constroirAtivo(rs));
             }
         } catch (Exception e) {
             throw new RuntimeException("Erro ao buscar catálogo de ativos: " + e.getMessage(), e);
@@ -36,23 +29,45 @@ public class AtivoDAO {
     
     public Ativo buscarPorTicker(String ticker) {
         String sql = "SELECT * FROM ativos WHERE ticker = ?";
-        try (Connection conn = ConexaoBanco.getConexao();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            
+        try {
+            Connection conn = ConexaoBanco.getConexao();
+            PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, ticker);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    Ativo ativo = new Ativo();
-                    ativo.setId(rs.getInt("id"));
-                    ativo.setTicker(rs.getString("ticker"));
-                    ativo.setNome(rs.getString("nome"));
-                    ativo.setTipo(rs.getString("tipo"));
-                    return ativo;
+                    return constroirAtivo(rs);
                 }
             }
         } catch (Exception e) {
             throw new RuntimeException("Erro ao buscar ativo por ticker: " + e.getMessage(), e);
         }
-        return null; // Retorna nulo se o ativo não existir na base de dados
+        return null;
+    }
+
+    public Ativo buscarPorId(int id) {
+        String sql = "SELECT * FROM ativos WHERE id = ?";
+        try {
+            
+            Connection conn = ConexaoBanco.getConexao();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return constroirAtivo(rs);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar ativo por ID: " + e.getMessage(), e);
+        }
+        return null;
+    }
+
+    private Ativo constroirAtivo(ResultSet rs) throws java.sql.SQLException {
+        Ativo ativo = new Ativo();
+        ativo.setId(rs.getInt("id"));
+        ativo.setTicker(rs.getString("ticker"));
+        ativo.setNome(rs.getString("nome"));
+        ativo.setTipo(rs.getString("tipo"));
+        return ativo;
     }
 }
