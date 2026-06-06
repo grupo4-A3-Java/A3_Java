@@ -1,11 +1,11 @@
 package com.usjt.projeto_a3.view;
 
 import com.usjt.projeto_a3.model.Usuario;
-import com.usjt.projeto_a3.dao.UsuarioDAO;
+import com.usjt.projeto_a3.factory.AppFactory;
+import com.usjt.projeto_a3.service.UsuarioService;
+import com.usjt.projeto_a3.util.UIUtils;
 import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.time.Year;
 
 /**
@@ -59,11 +59,11 @@ public class TelaCadastro extends JDialog {
         sub.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // ── Campos ────────────────────────────────────────────────────────
-        campoNome      = buildTextField();
-        campoEmail     = buildTextField();
-        campoSenha     = buildPasswordField();
-        campoConfirmar = buildPasswordField();
-        campoAno       = buildTextField();
+        campoNome      = UIUtils.buildTextField();
+        campoEmail     = UIUtils.buildTextField();
+        campoSenha     = UIUtils.buildPasswordField();
+        campoConfirmar = UIUtils.buildPasswordField();
+        campoAno       = UIUtils.buildTextField();
 
         // ── Label de erro ─────────────────────────────────────────────────
         lblErro = new JLabel(" ");
@@ -99,15 +99,15 @@ public class TelaCadastro extends JDialog {
         card.add(Box.createVerticalStrut(4));
         card.add(sub);
         card.add(Box.createVerticalStrut(28));
-        card.add(fieldBlock("Nome Completo",      campoNome));
+        card.add(UIUtils.buildFieldBlock("Nome Completo",      campoNome));
         card.add(Box.createVerticalStrut(14));
-        card.add(fieldBlock("Email",              campoEmail));
+        card.add(UIUtils.buildFieldBlock("Email",              campoEmail));
         card.add(Box.createVerticalStrut(14));
-        card.add(fieldBlock("Senha",              campoSenha));
+        card.add(UIUtils.buildFieldBlock("Senha",              campoSenha));
         card.add(Box.createVerticalStrut(14));
-        card.add(fieldBlock("Confirmar Senha",    campoConfirmar));
+        card.add(UIUtils.buildFieldBlock("Confirmar Senha",    campoConfirmar));
         card.add(Box.createVerticalStrut(14));
-        card.add(fieldBlock("Ano de Nascimento",  campoAno));
+        card.add(UIUtils.buildFieldBlock("Ano de Nascimento",  campoAno));
         card.add(Box.createVerticalStrut(8));
         card.add(lblErro);
         card.add(Box.createVerticalStrut(8));
@@ -118,53 +118,8 @@ public class TelaCadastro extends JDialog {
         return card;
     }
 
-    // ─── Bloco label + campo ──────────────────────────────────────────────────
-    private JPanel fieldBlock(String label, JComponent campo) {
-        JPanel p = new JPanel();
-        p.setOpaque(false);
-        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-
-        JLabel lbl = new JLabel(label);
-        lbl.setFont(TelaPrincipal.F_SUB);
-        lbl.setForeground(TelaPrincipal.TEXT);
-        lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        campo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        campo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
-
-        p.add(lbl);
-        p.add(Box.createVerticalStrut(6));
-        p.add(campo);
-        return p;
-    }
-
-    // ─── Helpers de campo ─────────────────────────────────────────────────────
-    private JTextField buildTextField() {
-        JTextField f = new JTextField();
-        estilizarCampo(f);
-        return f;
-    }
-
-    private JPasswordField buildPasswordField() {
-        JPasswordField f = new JPasswordField();
-        f.setEchoChar('●');
-        estilizarCampo(f);
-        return f;
-    }
-
-    private void estilizarCampo(JComponent f) {
-        f.setBackground(TelaPrincipal.BG);
-        f.setForeground(TelaPrincipal.TEXT);
-        f.setFont(TelaPrincipal.F_BODY);
-        f.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(TelaPrincipal.BORDER, 1, true),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
-        f.setPreferredSize(new Dimension(0, 42));
-    }
-
     // ═══════════════════════════════════════════════════════════════════════════
-    // LÓGICA — preencha aqui quando tiver o DAO pronto
+    // LÓGICA DE CADASTRO
     // ═══════════════════════════════════════════════════════════════════════════
     private void tentarCadastro() {
         String nome      = campoNome.getText().trim();
@@ -224,8 +179,8 @@ public class TelaCadastro extends JDialog {
         novoUsuario.setDataNascimento(Integer.parseInt(anoStr));
         
         try {
-            UsuarioDAO dao = new UsuarioDAO();
-            dao.salvar(novoUsuario);
+            UsuarioService service = AppFactory.getInstance().getUsuarioService();
+            service.salvar(novoUsuario);
             
             JOptionPane.showMessageDialog(this,
             "Conta criada com sucesso!\nFaça login para entrar.",
