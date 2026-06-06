@@ -1,6 +1,9 @@
 package com.usjt.projeto_a3.view;
 
+import com.usjt.projeto_a3.dao.AtivoDAO;
 import com.usjt.projeto_a3.dao.FinanceiroDAO;
+import com.usjt.projeto_a3.factory.AppFactory;
+import com.usjt.projeto_a3.service.FinanceiroService;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -9,7 +12,6 @@ import java.net.URL;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.List;
-import com.usjt.projeto_a3.dao.AtivoDAO;
 import com.usjt.projeto_a3.model.Ativo;
 
 public class PainelCarteira extends JPanel {
@@ -79,8 +81,8 @@ public class PainelCarteira extends JPanel {
             @Override
             protected List<Object[]> doInBackground() {
                 // 1. Busca na Base de Dados (MySQL)
-                FinanceiroDAO dao = new FinanceiroDAO();
-                List<Object[]> ativosBD = dao.buscarCarteiraDoUsuario(usuarioId);
+                FinanceiroService financeiroService = AppFactory.getInstance().getFinanceiroService();
+                List<Object[]> ativosBD = financeiroService.buscarCarteiraDoUsuario(usuarioId);
                 
                 if (ativosBD.isEmpty()) return ativosBD;
 
@@ -367,7 +369,7 @@ public class PainelCarteira extends JPanel {
                 conn.disconnect();
                 
             } catch (Exception e) {
-                System.out.println("Erro ao buscar " + ticker + " na Binance: " + e.getMessage());
+                // Erro ao buscar preço — ignorado silenciosamente
             }
         }
         return precos;

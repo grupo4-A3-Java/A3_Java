@@ -24,18 +24,31 @@ public class UsuarioDAO {
             ResultSet rs = ps.executeQuery();
             
             if (rs.next()){ 
-                Usuario usu = new Usuario();
-                usu.setId(rs.getInt("id"));
-                usu.setNome(rs.getString("nome"));
-                usu.setEmail(rs.getString("email"));
-                usu.setSenha(rs.getString("senha"));
-                usu.setPerfil(rs.getString("perfil"));
-                usu.setStatus(rs.getString("status")); 
-                return usu;
+                return constroirUsuario(rs);
             }
             
         } catch(Exception e){
-            e.printStackTrace();
+            throw new RuntimeException("Erro ao buscar usuário por email e senha: " + e.getMessage(), e);
+        }
+        return null;
+    }
+
+    // ─── BUSCAR POR ID ───
+    public Usuario buscarPorId(int id) {
+        String sql = "SELECT * FROM usuarios WHERE id = ?";
+        
+        try(Connection conn = ConexaoBanco.getConexao();
+            PreparedStatement ps = conn.prepareStatement(sql)){
+            
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()){ 
+                return constroirUsuario(rs);
+            }
+            
+        } catch(Exception e){
+            throw new RuntimeException("Erro ao buscar usuário por ID: " + e.getMessage(), e);
         }
         return null;
     }
@@ -50,15 +63,7 @@ public class UsuarioDAO {
              ResultSet rs = ps.executeQuery()){
             
             while (rs.next()){
-                Usuario usu = new Usuario();
-                usu.setId(rs.getInt("id"));
-                usu.setNome(rs.getString("nome"));
-                usu.setEmail(rs.getString("email"));
-                usu.setSenha(rs.getString("senha"));
-                usu.setPerfil(rs.getString("perfil"));
-                usu.setStatus(rs.getString("status"));
-                
-                lista.add(usu);
+                lista.add(constroirUsuario(rs));
             }
             
         } catch (SQLException e) {
@@ -124,5 +129,17 @@ public class UsuarioDAO {
             // Tratamento amigável para chave estrangeira (Foreign Key)
             throw new RuntimeException("Não é possível deletar este usuário porque ele possui operações financeiras no sistema. Edite e mude o status para 'Inativo'.", e);
         }
+    }
+
+    // ─── CONSTRUIR USUARIO (Helper) ───
+    private Usuario constroirUsuario(ResultSet rs) throws SQLException {
+        Usuario usu = new Usuario();
+        usu.setId(rs.getInt("id"));
+        usu.setNome(rs.getString("nome"));
+        usu.setEmail(rs.getString("email"));
+        usu.setSenha(rs.getString("senha"));
+        usu.setPerfil(rs.getString("perfil"));
+        usu.setStatus(rs.getString("status"));
+        return usu;
     }
 }

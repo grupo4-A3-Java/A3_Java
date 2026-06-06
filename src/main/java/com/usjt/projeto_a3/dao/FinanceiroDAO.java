@@ -196,4 +196,8 @@ public class FinanceiroDAO {
 
         return lista;
     }
+
+    public List<Object[]> buscarHistoricoOperacoes(int usuarioId) {
+        return buscarHistoricoUsuario(usuarioId);
+    }
 }

@@ -1,0 +1,106 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.backup
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+hs_err_pid*
+
+# IDE - IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# IDE - Eclipse
+.classpath
+.project
+.settings/
+.metadata/
+bin/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+
+# IDE - NetBeans
+nbproject/
+*.nbattrs
+build/
+dist/
+
+# IDE - VS Code
+.vscode/
+*.code-workspace
+
+# IDE - Other
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# OS Files
+*.swp
+*.swo
+*~
+.~*
+.orig
+*.patch
+
+# Gradle (se usar)
+.gradle/
+build/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+
+# Database
+db.properties
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Runtime data
+tmp/
+temp/
+cache/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build output
+dist/
+*.exe
+*.so
+
+# Temporary files
+*.tmp
+*.bak
+.classpath.bak
+
+# Project specific
+db.properties
+!db.properties.example
+.DS_Store

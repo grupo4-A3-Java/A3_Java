@@ -2,11 +2,13 @@ package com.usjt.projeto_a3.view;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import com.usjt.projeto_a3.dao.UsuarioDAO;
+import com.usjt.projeto_a3.exception.ValidationException;
 import com.usjt.projeto_a3.model.Usuario;
+import com.usjt.projeto_a3.util.UIUtils;
 
 public class TelaLogin extends JFrame {
 
@@ -80,8 +82,8 @@ public class TelaLogin extends JFrame {
         logoArea.add(subtitulo);
 
         // ── Campos ────────────────────────────────────────────────────────
-        campoEmail = buildTextField("Digite seu email");
-        campoSenha = buildPasswordField("Digite sua senha");
+        campoEmail = UIUtils.buildTextFieldWithPlaceholder("Digite seu email");
+        campoSenha = UIUtils.buildPasswordFieldWithPlaceholder("Digite sua senha");
 
         // ── Label de erro ─────────────────────────────────────────────────
         lblErro = new JLabel(" ");
@@ -124,9 +126,9 @@ public class TelaLogin extends JFrame {
         // ── Montagem do card ──────────────────────────────────────────────
         card.add(logoArea);
         card.add(Box.createVerticalStrut(30));
-        card.add(fieldBlock("Email", campoEmail));
+        card.add(UIUtils.buildFieldBlock("Email", campoEmail));
         card.add(Box.createVerticalStrut(14));
-        card.add(fieldBlock("Senha", campoSenha));
+        card.add(UIUtils.buildFieldBlock("Senha", campoSenha));
         card.add(Box.createVerticalStrut(6));
         card.add(lblErro);
         card.add(Box.createVerticalStrut(6));
@@ -137,26 +139,6 @@ public class TelaLogin extends JFrame {
         card.add(hint);
 
         return card;
-    }
-
-    // ─── Bloco label + campo ──────────────────────────────────────────────────
-    private JPanel fieldBlock(String label, JComponent campo) {
-        JPanel p = new JPanel();
-        p.setOpaque(false);
-        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-
-        JLabel lbl = new JLabel(label);
-        lbl.setFont(TelaPrincipal.F_SUB);
-        lbl.setForeground(TelaPrincipal.TEXT);
-        lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        campo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        campo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
-
-        p.add(lbl);
-        p.add(Box.createVerticalStrut(6));
-        p.add(campo);
-        return p;
     }
 
     // ─── Hint de credenciais de teste ─────────────────────────────────────────
@@ -187,65 +169,6 @@ public class TelaLogin extends JFrame {
         return p;
     }
 
-    // ─── Helpers de campo ─────────────────────────────────────────────────────
-    private JTextField buildTextField(String placeholder) {
-        JTextField f = new JTextField();
-        estilizarCampo(f);
-        // placeholder via ForegroundColor (simples)
-        f.setForeground(TelaPrincipal.MUTED);
-        f.setText(placeholder);
-        f.addFocusListener(new FocusAdapter() {
-            @Override public void focusGained(FocusEvent e) {
-                if (f.getText().equals(placeholder)) {
-                    f.setText("");
-                    f.setForeground(TelaPrincipal.TEXT);
-                }
-            }
-            @Override public void focusLost(FocusEvent e) {
-                if (f.getText().isEmpty()) {
-                    f.setForeground(TelaPrincipal.MUTED);
-                    f.setText(placeholder);
-                }
-            }
-        });
-        return f;
-    }
-
-    private JPasswordField buildPasswordField(String placeholder) {
-        JPasswordField f = new JPasswordField();
-        estilizarCampo(f);
-        f.setEchoChar((char) 0); // mostra o placeholder como texto
-        f.setForeground(TelaPrincipal.MUTED);
-        f.setText(placeholder);
-        f.addFocusListener(new FocusAdapter() {
-            @Override public void focusGained(FocusEvent e) {
-                if (new String(f.getPassword()).equals(placeholder)) {
-                    f.setText("");
-                    f.setForeground(TelaPrincipal.TEXT);
-                    f.setEchoChar('●');
-                }
-            }
-            @Override public void focusLost(FocusEvent e) {
-                if (f.getPassword().length == 0) {
-                    f.setEchoChar((char) 0);
-                    f.setForeground(TelaPrincipal.MUTED);
-                    f.setText(placeholder);
-                }
-            }
-        });
-        return f;
-    }
-
-    private void estilizarCampo(JComponent f) {
-        f.setBackground(TelaPrincipal.BG);
-        f.setFont(TelaPrincipal.F_BODY);
-        f.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(TelaPrincipal.BORDER, 1, true),
-            BorderFactory.createEmptyBorder(8, 12, 8, 12)
-        ));
-        f.setPreferredSize(new Dimension(0, 42));
-    }
-
     // ─── LÓGICA DE LOGIN COM VERIFICAÇÃO DE STATUS ───
     private void tentarLogin() {
         
@@ -261,38 +184,25 @@ public class TelaLogin extends JFrame {
         }
         
         try {
-            UsuarioDAO dao = new UsuarioDAO();
-            Usuario usuarioLogado = dao.buscarPorEmailESenha(email, senha);
+            UsuarioDAO usuarioDao = new UsuarioDAO();
+            Usuario usuarioLogado = usuarioDao.buscarPorEmailESenha(email, senha);
             
-            if (usuarioLogado != null) {
-                
-                // 1. Verificação de Segurança (Status)
-                if ("Inativo".equalsIgnoreCase(usuarioLogado.getStatus())) {
-                    javax.swing.JOptionPane.showMessageDialog(this, 
-                        "Esta conta foi desativada pelo Administrador do sistema.\nContacte o suporte para mais informações.", 
-                        "Acesso Bloqueado", 
-                        javax.swing.JOptionPane.ERROR_MESSAGE);
-                    return; // Interrompe o login e não deixa passar!
-                }
-                
-                // 2. Se for "Ativo", o fluxo continua normalmente
-                boolean isAdmin = "ADMIN".equalsIgnoreCase(usuarioLogado.getPerfil());
-                
-                TelaPrincipal principal = new TelaPrincipal(usuarioLogado.getId(), usuarioLogado.getNome(), isAdmin);
-                principal.setVisible(true);
-                
-                this.dispose(); // Fecha a tela de login
-                
-            } else {
-                javax.swing.JOptionPane.showMessageDialog(this, 
-                    "E-mail ou senha incorretos.", 
-                    "Erro de Autenticação", 
-                    javax.swing.JOptionPane.ERROR_MESSAGE);
-            }
+            boolean isAdmin = "ADMIN".equalsIgnoreCase(usuarioLogado.getPerfil());
             
-        } catch (Exception ex) {
+            TelaPrincipal principal = new TelaPrincipal(usuarioLogado.getId(), usuarioLogado.getNome(), isAdmin);
+            principal.setVisible(true);
+            
+            this.dispose(); // Fecha a tela de login
+            
+        } catch (ValidationException ex) {
             javax.swing.JOptionPane.showMessageDialog(this, 
-                "Erro ao conectar ao sistema: " + ex.getMessage(), 
+                ex.getMessage(), 
+                "Erro de Autenticação", 
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            String mensagem = "Erro interno do sistema";
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                mensagem,
                 "Erro no Sistema", 
                 javax.swing.JOptionPane.ERROR_MESSAGE); 
         }
@@ -303,11 +213,6 @@ public class TelaLogin extends JFrame {
         // vamos precisar ajustá-la a seguir para usar o Status.
         new TelaCadastro(this).setVisible(true);
     }
-
-    private void mostrarErro(String msg) {
-        lblErro.setText(msg);
-    }
-
     // ─── Main para testar isoladamente ───────────────────────────────────────
     public static void main(String[] args) {
         FlatDarkLaf.setup();
