@@ -1,6 +1,7 @@
 package com.usjt.projeto_a3.view;
 
-import com.usjt.projeto_a3.dao.FinanceiroDAO;
+import com.usjt.projeto_a3.factory.AppFactory;
+import com.usjt.projeto_a3.service.FinanceiroService;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -85,8 +86,8 @@ public class PainelDashboard extends JPanel {
             protected Map<String, Object> doInBackground() {
                 Map<String, Object> resultado = new HashMap<>();
                 
-                FinanceiroDAO dao = new FinanceiroDAO();
-                List<Object[]> ativosBD = dao.buscarCarteiraDoUsuario(usuarioId);
+                FinanceiroService financeiroService = AppFactory.getInstance().getFinanceiroService();
+                List<Object[]> ativosBD = financeiroService.buscarCarteiraDoUsuario(usuarioId);
                 
                 double totalInvestido = 0.0;
                 double patrimonioTotal = 0.0;

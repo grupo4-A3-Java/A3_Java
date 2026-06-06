@@ -13,8 +13,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import com.usjt.projeto_a3.dao.AtivoDAO;
-import com.usjt.projeto_a3.dao.FinanceiroDAO;
+import com.usjt.projeto_a3.factory.AppFactory;
+import com.usjt.projeto_a3.service.AtivoService;
+import com.usjt.projeto_a3.service.FinanceiroService;
 import com.usjt.projeto_a3.model.Ativo;
 
 public class PainelMercado extends JPanel {
@@ -487,8 +488,8 @@ public class PainelMercado extends JPanel {
                 return;
             }
 
-            AtivoDAO ativoDAO = new AtivoDAO();
-            Ativo ativo = ativoDAO.buscarPorTicker(ticker);
+            AtivoService ativoService = AppFactory.getInstance().getAtivoService();
+            Ativo ativo = ativoService.buscarPorTicker(ticker);
             
             if (ativo == null) {
                 JOptionPane.showMessageDialog(this, "Erro: Este ativo não está registado no catálogo do sistema.", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -498,8 +499,8 @@ public class PainelMercado extends JPanel {
             TelaPrincipal janelaPrincipal = (TelaPrincipal) SwingUtilities.getWindowAncestor(this);
             int usuarioId = janelaPrincipal.getUsuarioIdLogado();
 
-            FinanceiroDAO financeiroDAO = new FinanceiroDAO();
-            financeiroDAO.comprarAtivo(usuarioId, ativo.getId(), quantidade, precoAtual);
+            FinanceiroService financeiroService = AppFactory.getInstance().getFinanceiroService();
+            financeiroService.comprarAtivo(usuarioId, ativo.getId(), quantidade, precoAtual);
 
             JOptionPane.showMessageDialog(this, 
                 "Compra de " + quantidade + "x " + ticker + " realizada com sucesso!\nO seu saldo foi atualizado.", 

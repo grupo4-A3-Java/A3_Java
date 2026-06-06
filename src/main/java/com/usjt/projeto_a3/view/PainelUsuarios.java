@@ -6,7 +6,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+
 import com.usjt.projeto_a3.dao.UsuarioDAO;
+import com.usjt.projeto_a3.factory.AppFactory;
+import com.usjt.projeto_a3.service.UsuarioService;
 import com.usjt.projeto_a3.model.Usuario;
 
 public class PainelUsuarios extends JPanel {
@@ -32,8 +35,8 @@ public class PainelUsuarios extends JPanel {
         try {
             modeloTabela.setRowCount(0); // Limpa a tabela antes de preencher
             
-            UsuarioDAO dao = new UsuarioDAO();
-            usuariosCache = dao.listarTodos(); // Guarda na memória
+            UsuarioService usuarioService = AppFactory.getInstance().getUsuarioService();
+            usuariosCache = usuarioService.listarTodos(); // Guarda na memória
             
             for (Usuario u : usuariosCache) {
                 modeloTabela.addRow(new Object[]{

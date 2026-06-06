@@ -1,6 +1,7 @@
 package com.usjt.projeto_a3.view;
 
-import com.usjt.projeto_a3.dao.FinanceiroDAO;
+import com.usjt.projeto_a3.factory.AppFactory;
+import com.usjt.projeto_a3.service.FinanceiroService;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -125,8 +126,8 @@ public class PainelHistorico extends JPanel {
         new SwingWorker<List<Object[]>, Void>() {
             @Override
             protected List<Object[]> doInBackground() {
-                FinanceiroDAO dao = new FinanceiroDAO();
-                return dao.buscarHistoricoUsuario(usuarioId);
+                FinanceiroService financeiroService = AppFactory.getInstance().getFinanceiroService();
+                return financeiroService.buscarHistoricoOperacoes(usuarioId);
             }
 
             @Override
