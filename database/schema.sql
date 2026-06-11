@@ -43,3 +43,17 @@ CREATE TABLE IF NOT EXISTS carteira (
 -- Usuario admin pra conseguir entrar no sistema
 INSERT INTO usuarios (nome, email, senha, perfil, status) VALUES
 ('Administrador', 'admin@investsys.com', 'admin123', 'Admin', 'Ativo');
+    
+INSERT INTO ativos (ticker, nome, tipo) VALUES
+('PETR4', 'Petrobras PN', 'Ação'),
+('VALE3', 'Vale ON', 'Ação'),
+('ITUB4', 'Itaú Unibanco PN', 'Ação'),
+('BBDC4', 'Bradesco PN', 'Ação'),
+('ABEV3', 'Ambev ON', 'Ação'),
+('MGLU3', 'Magazine Luiza ON', 'Ação'),
+('HGLG11', 'CSHG Logística', 'FII'),
+('IVVB11', 'iShares S&P 500', 'ETF'),
+('BTC', 'Bitcoin', 'Cripto'),
+('ETH', 'Ethereum', 'Cripto'),
+('SOL', 'Solana', 'Cripto'),
+('ADA', 'Cardano', 'Cripto');
